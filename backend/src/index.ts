@@ -1,9 +1,8 @@
-import express from 'express'
+import express, { Router } from 'express'
 import  'dotenv/config'
 import mongoose from 'mongoose'
-import z from 'zod'
-import bcrypt from 'bcrypt'
-import {UserModel} from './db'
+import cors from 'cors'
+import {router} from './routes/index'
 
 
 const app = express()
@@ -11,113 +10,21 @@ const app = express()
 mongoose.connect(`${process.env.MONGO_CONNECTION}`)
 
 
+const myfrontend = ['http://localhost:3001']
+app.use(cors({
+    optionsSuccessStatus:200,
+    origin: myfrontend
+
+}))
+
+
 app.use(express.json())
 
 
-// version of my backend
-const runningVersion = "api/v1" 
+app.use('/api/v1',router)
 
 
 
-
-app.post(`/${runningVersion}/signup`,async(req,res)=>{
-    const UserInput = z.object({
-        userName: z.string().max(30).min(3).trim().toLowerCase(),
-        password:z.string().min(6),
-        firstName:z.string().trim().max(40),
-        lastName:z.string().trim().max(40),
-    })
-
-    const isValid = UserInput.safeParse({
-        userName:req.body.userName,
-        password:req.body.password,
-        firstName:req.body.firstName,
-        lastName:req.body.lastName
-    })
-
-    if(!isValid.success){
-        const errorMessage = isValid.error.formErrors
-        res.status(411).json({
-            userName:errorMessage.fieldErrors.userName,
-            password:errorMessage.fieldErrors.password,
-            firstName:errorMessage.fieldErrors.firstName,
-            lastName:errorMessage.fieldErrors.lastName,
-        })
-
-        return;
-    }
-
-
-    try{
-        const hashedPassword = await bcrypt.hash(req.body.password,5);
-        const resp = await UserModel.create({
-            userName:req.body.userName,
-            password:hashedPassword,
-            firstName:req.body.firstName,
-            lastName:req.body.lastName
-        })
-        if(!resp){
-            res.status(403).json({
-                message:"user already exists"
-            })
-            return;
-        }
-
-        res.status(200).json({
-            message:"signup sucessfull"
-        })
-
-    }catch(err){
-        res.status(500).json({
-            message:"internal server error"
-        })
-    }
-})
-
-app.post(`/${runningVersion}/singin`,async(req,res)=>{
-    const UserInput = z.object({
-        userName: z.string().max(30).min(3).trim().toLowerCase(),
-        password:z.string().min(6),
-    })
-
-    const isValid = UserInput.safeParse({
-        userName:req.body.userName,
-        password:req.body.password,
-    })
-
-    if(!isValid.success){
-        const errorMessage = isValid.error.formErrors
-        res.status(411).json({
-            userName:errorMessage.fieldErrors.userName,
-            password:errorMessage.fieldErrors.password,
-        })
-
-        return;
-    }
-
-
-    const isUserValid = await UserModel.findOne({userName:req.body.userName});
-    if(!isUserValid){
-        res.status(404).json({
-            message:"user not availabel"
-        })
-        return;
-    }
-
-    const isCorrectPassword = await bcrypt.compare(req.body.password,String(isUserValid.password))
-   
-    if(!isCorrectPassword){
-        res.status(403).json({
-            message:"password is incorrect"
-        })
-        return; 
-    }
-
-    res.status(200).json({
-        message:"login sucessfull"
-    })
-
-})
 app.listen(3000,()=>{
     console.log("listing to port 3000")
 })
