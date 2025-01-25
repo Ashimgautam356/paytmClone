@@ -5,6 +5,7 @@ import { userRouter } from './user';
 export const router = express.Router();
 
 
-router.post('/user',userRouter)
+router.use('/user',userRouter)
+
 
 

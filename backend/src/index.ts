@@ -1,4 +1,4 @@
-import express, { Router } from 'express'
+import express from 'express'
 import  'dotenv/config'
 import mongoose from 'mongoose'
 import cors from 'cors'
@@ -11,11 +11,11 @@ mongoose.connect(`${process.env.MONGO_CONNECTION}`)
 
 
 const myfrontend = ['http://localhost:3001']
-app.use(cors({
-    optionsSuccessStatus:200,
-    origin: myfrontend
+// app.use(cors({
+//     optionsSuccessStatus:200,
+//     origin: myfrontend
 
-}))
+// }))
 
 
 app.use(express.json())
