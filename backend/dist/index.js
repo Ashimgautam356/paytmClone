@@ -40,7 +40,7 @@ app.post(`/${runningVersion}/signup`, (req, res) => __awaiter(void 0, void 0, vo
     if (!isValid.success) {
         const errorMessage = isValid.error.formErrors;
         res.status(411).json({
-            userName: errorMessage.fieldErrors.firstName,
+            userName: errorMessage.fieldErrors.userName,
             password: errorMessage.fieldErrors.password,
             firstName: errorMessage.fieldErrors.firstName,
             lastName: errorMessage.fieldErrors.lastName,
@@ -59,8 +59,8 @@ app.post(`/${runningVersion}/signup`, (req, res) => __awaiter(void 0, void 0, vo
             res.status(403).json({
                 message: "user already exists"
             });
+            return;
         }
-        console.log(resp);
         res.status(200).json({
             message: "signup sucessfull"
         });
@@ -70,6 +70,42 @@ app.post(`/${runningVersion}/signup`, (req, res) => __awaiter(void 0, void 0, vo
             message: "internal server error"
         });
     }
+}));
+app.post(`/${runningVersion}/singin`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const UserInput = zod_1.default.object({
+        userName: zod_1.default.string().max(30).min(3).trim().toLowerCase(),
+        password: zod_1.default.string().min(6),
+    });
+    const isValid = UserInput.safeParse({
+        userName: req.body.userName,
+        password: req.body.password,
+    });
+    if (!isValid.success) {
+        const errorMessage = isValid.error.formErrors;
+        res.status(411).json({
+            userName: errorMessage.fieldErrors.userName,
+            password: errorMessage.fieldErrors.password,
+        });
+        return;
+    }
+    const isUserValid = yield db_1.UserModel.findOne({ userName: req.body.userName });
+    if (!isUserValid) {
+        res.status(404).json({
+            message: "user not availabel"
+        });
+        return;
+    }
+    const isCorrectPassword = yield bcrypt_1.default.compare(req.body.password, String(isUserValid.password));
+    console.log(isCorrectPassword);
+    if (!isCorrectPassword) {
+        res.status(403).json({
+            message: "password is incorrect"
+        });
+        return;
+    }
+    res.status(200).json({
+        message: "login sucessfull"
+    });
 }));
 app.listen(3000, () => {
     console.log("listing to port 3000");
