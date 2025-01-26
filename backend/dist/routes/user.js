@@ -6,6 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const user_1 = require("../controllers/user/user");
+const auth_1 = require("../middlewares/auth");
 exports.userRouter = express_1.default.Router();
 exports.userRouter.post('/signup', user_1.singup);
 exports.userRouter.post('/signin', user_1.signin);
+exports.userRouter.use(auth_1.auth);
+exports.userRouter.get('/hello', (req, res) => {
+    res.send("hello world");
+});
