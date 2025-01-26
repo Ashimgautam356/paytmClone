@@ -11,6 +11,4 @@ exports.userRouter = express_1.default.Router();
 exports.userRouter.post('/signup', user_1.singup);
 exports.userRouter.post('/signin', user_1.signin);
 exports.userRouter.use(auth_1.auth);
-exports.userRouter.get('/hello', (req, res) => {
-    res.send("hello world");
-});
+exports.userRouter.patch('/update', user_1.updateInfo);

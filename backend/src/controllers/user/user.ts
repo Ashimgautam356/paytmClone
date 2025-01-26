@@ -114,3 +114,103 @@ export async function signin(req:Request,res:Response){
     
     
 }
+
+
+export async function updateInfo(req:Request,res:Response) {
+
+    const UserInput = z.object({
+        newpassword:z.string().min(6).optional(),
+        oldpassword:z.string().min(6).optional(),
+        firstName:z.string().trim().max(40).optional(),
+        lastName:z.string().trim().max(40).optional(),
+    }).refine((data)=> !data.newpassword || data.oldpassword,{
+        message:"old password is required for setting new password",
+        path:['oldpassword'],
+    }
+    )
+
+
+    const isValid = UserInput.safeParse({
+        newpassword:req.body.newpassword,
+        oldpassword:req.body.oldpassword,
+        firstName:req.body.firstName,
+        lastName:req.body.lastName
+    })
+
+    if(!isValid.success){
+        const errorMessage = isValid.error.formErrors
+        res.status(411).json({
+            newpassword:errorMessage.fieldErrors.newpassword,
+            oldpassword:errorMessage.fieldErrors.oldpassword,
+            firstName:errorMessage.fieldErrors.firstName,
+            lastName:errorMessage.fieldErrors.lastName,
+        })
+
+        return;
+    }
+
+
+    const isUserValid = await UserModel.findById({_id:req.body.userId});
+    if(!isUserValid){
+        res.status(404).json({
+            message:"user not availabel"
+        })
+        return;
+    }
+
+    if(req.body.oldpassword){
+        const isCorrectPassword = await bcrypt.compare(req.body.oldpassword,String(isUserValid.password))
+   
+        if(!isCorrectPassword){
+        res.status(411).json({
+            message:"password is incorrect"
+        })
+        return; 
+        }
+    
+        try{
+            const hashedPassword = await bcrypt.hash(req.body.newpassword,5);
+            const updatedUser = await UserModel.findByIdAndUpdate(req.body.userId,{
+                $set:{firstName:req.body.firstName||isUserValid.firstName,lastName:req.body.lastName||isUserValid.lastName,password:hashedPassword}
+            },{new: true,runValidators: true})
+
+            res.status(200).json({
+                message:"update sucessfull",
+                data:{firstName:updatedUser?.firstName,lastName:updatedUser?.lastName},
+            })
+        }catch(err){
+            res.status(500).json({
+                message:"interal server errror",
+                error: err
+            })
+        }
+
+        return;
+    }else{
+
+        try{
+
+            const updatedUser = await UserModel.findByIdAndUpdate(req.body.userId,{
+                $set:{firstName:req.body.firstName,lastName:req.body.lastName}
+            },{new:true,runValidators:true})
+
+            res.status(200).json({
+                message:"update sucessfull",
+                data:{firstName:updatedUser?.firstName,lastName:updatedUser?.lastName}
+            })
+
+        }catch(err){
+            res.status(500).json({
+                message:"interal server errror",
+                error: err
+            })
+        }
+
+    }
+
+
+    
+
+
+    
+}
