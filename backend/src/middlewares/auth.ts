@@ -13,17 +13,22 @@ export async function auth(req:Request,res:Response,next:NextFunction) {
         })
         return; 
     }
-
-    const isValid:{userId:string,iat:number}|any = jwt.verify(token,`${process.env.JWT_SECRET}`)
-
-    if(!isValid){
-        res.status(403).json({
+    try{
+        const isValid:{userId:string,iat:number}|any = jwt.verify(token,`${process.env.JWT_SECRET}`)
+         if(!isValid){
+            res.status(403).json({
             message:"token not valid"
         })
-        return; 
+        req.body.userId = isValid.userId; 
+        next();
     }
 
+    }catch(err){
 
-    req.body.userId = isValid.userId; 
-    next();
+        res.status(411).json({
+            message:"invalid token"
+        })
+
+    }
+    
 }

@@ -24,14 +24,20 @@ function auth(req, res, next) {
             });
             return;
         }
-        const isValid = jsonwebtoken_1.default.verify(token, `${process.env.JWT_SECRET}`);
-        if (!isValid) {
-            res.status(403).json({
-                message: "token not valid"
-            });
-            return;
+        try {
+            const isValid = jsonwebtoken_1.default.verify(token, `${process.env.JWT_SECRET}`);
+            if (!isValid) {
+                res.status(403).json({
+                    message: "token not valid"
+                });
+                req.body.userId = isValid.userId;
+                next();
+            }
         }
-        req.body.userId = isValid.userId;
-        next();
+        catch (err) {
+            res.status(411).json({
+                message: "invalid token"
+            });
+        }
     });
 }

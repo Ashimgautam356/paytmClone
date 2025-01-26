@@ -199,7 +199,6 @@ function getUsers(req, res) {
                 { lastName: { "$regex": filter || "" } }
             ]
         });
-        console.log(users);
         res.status(200).json({
             user: users.map(user => ({
                 userName: user.userName,
