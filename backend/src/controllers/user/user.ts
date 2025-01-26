@@ -214,3 +214,40 @@ export async function updateInfo(req:Request,res:Response) {
 
     
 }
+
+
+
+
+
+export async function getUsers(req:Request,res:Response) {
+        const filter:string = req.query.filter  as string ;
+
+
+        const users = await UserModel.find({
+            $or:[
+                {firstName:{"$regex":filter|| ""}},
+                {lastName:{"$regex":filter || ""}}
+            ]
+        })
+
+
+        res.status(200).json({
+            user:users.map(user=> ({
+                userName:user.userName,
+                firstName:user.firstName,
+                lastName:user.lastName,
+                _id: user._id
+
+            }))
+        })
+
+
+        
+
+
+
+   
+
+
+
+}

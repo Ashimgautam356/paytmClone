@@ -12,3 +12,4 @@ exports.userRouter.post('/signup', user_1.singup);
 exports.userRouter.post('/signin', user_1.signin);
 exports.userRouter.use(auth_1.auth);
 exports.userRouter.patch('/update', user_1.updateInfo);
+exports.userRouter.get('/bulk', user_1.getUsers);
