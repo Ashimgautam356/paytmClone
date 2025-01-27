@@ -28,12 +28,14 @@ function singup(req, res) {
             password: zod_1.default.string().min(6),
             firstName: zod_1.default.string().trim().max(40),
             lastName: zod_1.default.string().trim().max(40),
+            amount: zod_1.default.number().positive().min(1).max(10000)
         });
         const isValid = UserInput.safeParse({
             userName: req.body.userName,
             password: req.body.password,
             firstName: req.body.firstName,
-            lastName: req.body.lastName
+            lastName: req.body.lastName,
+            amount: req.body.amount
         });
         if (!isValid.success) {
             const errorMessage = isValid.error.formErrors;
@@ -42,30 +44,36 @@ function singup(req, res) {
                 password: errorMessage.fieldErrors.password,
                 firstName: errorMessage.fieldErrors.firstName,
                 lastName: errorMessage.fieldErrors.lastName,
+                amount: errorMessage.fieldErrors.amount
             });
             return;
         }
         try {
             const hashedPassword = yield bcrypt_1.default.hash(req.body.password, 5);
-            const resp = yield db_1.UserModel.create({
+            const userid = yield db_1.UserModel.create({
                 userName: req.body.userName,
                 password: hashedPassword,
                 firstName: req.body.firstName,
                 lastName: req.body.lastName
             });
-            if (!resp) {
-                res.status(411).json({
-                    message: "user already exists"
-                });
-                return;
-            }
+            yield db_1.AccountModel.create({
+                userId: userid._id,
+                balance: req.body.amount
+            });
             res.status(200).json({
                 message: "signup sucessfull"
             });
         }
         catch (err) {
+            if ((err === null || err === void 0 ? void 0 : err.code) == 11000) {
+                res.status(411).json({
+                    message: "user Already exist"
+                });
+                return;
+            }
             res.status(500).json({
-                message: "internal server error"
+                message: "internal server error",
+                error: err
             });
         }
     });

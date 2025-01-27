@@ -1,7 +1,7 @@
 import {Response,Request} from 'express'
 import z from 'zod'
 import bcrypt from 'bcrypt'
-import {UserModel} from '../../db'
+import {AccountModel, UserModel} from '../../db'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 
@@ -13,13 +13,15 @@ export  async function singup(req:Request,res:Response){
         password:z.string().min(6),
         firstName:z.string().trim().max(40),
         lastName:z.string().trim().max(40),
+        amount: z.number().positive().min(1).max(10000)
     })
 
     const isValid = UserInput.safeParse({
         userName:req.body.userName,
         password:req.body.password,
         firstName:req.body.firstName,
-        lastName:req.body.lastName
+        lastName:req.body.lastName,
+        amount:req.body.amount
     })
 
     if(!isValid.success){
@@ -29,6 +31,7 @@ export  async function singup(req:Request,res:Response){
             password:errorMessage.fieldErrors.password,
             firstName:errorMessage.fieldErrors.firstName,
             lastName:errorMessage.fieldErrors.lastName,
+            amount:errorMessage.fieldErrors.amount
         })
 
         return;
@@ -37,26 +40,33 @@ export  async function singup(req:Request,res:Response){
 
     try{
         const hashedPassword = await bcrypt.hash(req.body.password,5);
-        const resp = await UserModel.create({
+        const userid = await UserModel.create({
             userName:req.body.userName,
             password:hashedPassword,
             firstName:req.body.firstName,
             lastName:req.body.lastName
         })
-        if(!resp){
-            res.status(411).json({
-                message:"user already exists"
-            })
-            return;
-        }
 
+        await AccountModel.create({
+            userId:userid._id,
+            balance:req.body.amount
+        })
+        
         res.status(200).json({
             message:"signup sucessfull"
         })
 
-    }catch(err){
+    }catch(err:any){
+        if(err?.code == 11000){
+            res.status(411).json({
+                message:"user Already exist"
+            })
+            return 
+        }
+
         res.status(500).json({
-            message:"internal server error"
+            message:"internal server error",
+            error:err
         })
     }
 
