@@ -3,13 +3,19 @@ import { AccountModel } from "../../db";
 import mongoose from "mongoose";
 
 export async function transferMoney(req:Request,res:Response) {
+    const {balance,to,userId } = req.body
 
+    if(!balance || typeof balance !== 'number'  ){
+        res.status(400).json({
+            message:"enter valid balance"
+        })
+        return;
+    }
     try{   
         const session = await mongoose.startSession();
 
 
         session.startTransaction();
-        const {balance,to,userId } = req.body
 
         const sender:any= await AccountModel.findOne({userId:userId}).session(session);
 

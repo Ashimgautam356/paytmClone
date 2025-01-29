@@ -17,30 +17,43 @@ const db_1 = require("../../db");
 const mongoose_1 = __importDefault(require("mongoose"));
 function transferMoney(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const session = yield mongoose_1.default.startSession();
-        session.startTransaction();
         const { balance, to, userId } = req.body;
-        const sender = yield db_1.AccountModel.findOne({ userId: userId }).session(session);
-        if (!sender || sender.balance < balance) {
-            yield session.abortTransaction();
+        if (!balance || typeof balance !== 'number') {
             res.status(400).json({
-                message: "Insufficient balance"
+                message: "enter valid balance"
             });
             return;
         }
-        const reciever = yield db_1.AccountModel.findOne({ userId: to }).session(session);
-        if (!reciever) {
-            yield session.abortTransaction();
-            res.status(400).json({
-                message: "Invalid account"
+        try {
+            const session = yield mongoose_1.default.startSession();
+            session.startTransaction();
+            const sender = yield db_1.AccountModel.findOne({ userId: userId }).session(session);
+            if (!sender || sender.balance < balance) {
+                yield session.abortTransaction();
+                res.status(400).json({
+                    message: "Insufficient balance"
+                });
+                return;
+            }
+            const reciever = yield db_1.AccountModel.findOne({ userId: to }).session(session);
+            if (!reciever) {
+                yield session.abortTransaction();
+                res.status(400).json({
+                    message: "Invalid account"
+                });
+                return;
+            }
+            yield db_1.AccountModel.updateOne({ userId: userId }, { $inc: { balance: -balance } }).session(session);
+            yield db_1.AccountModel.updateOne({ userId: to }, { $inc: { balance: balance } }).session(session);
+            yield session.commitTransaction();
+            res.json({
+                message: "Transfer successful"
             });
-            return;
         }
-        yield db_1.AccountModel.updateOne({ userId: userId }, { $inc: { balance: -balance } }).session(session);
-        yield db_1.AccountModel.updateOne({ userId: to }, { $inc: { balance: balance } }).session(session);
-        yield session.commitTransaction();
-        res.json({
-            message: "Transfer successful"
-        });
+        catch (err) {
+            res.status(500).json({
+                message: "internal server error"
+            });
+        }
     });
 }
