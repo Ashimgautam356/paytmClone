@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.singup = singup;
 exports.signin = signin;
 exports.updateInfo = updateInfo;
-exports.getUsers = getUsers;
 const zod_1 = __importDefault(require("zod"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const db_1 = require("../../db");
@@ -196,24 +195,5 @@ function updateInfo(req, res) {
                 });
             }
         }
-    });
-}
-function getUsers(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const filter = req.query.filter;
-        const users = yield db_1.UserModel.find({
-            $or: [
-                { firstName: { "$regex": filter || "" } },
-                { lastName: { "$regex": filter || "" } }
-            ]
-        });
-        res.status(200).json({
-            user: users.map(user => ({
-                userName: user.userName,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                _id: user._id
-            }))
-        });
     });
 }
