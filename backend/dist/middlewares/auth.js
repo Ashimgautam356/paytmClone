@@ -18,29 +18,20 @@ require("dotenv/config");
 function auth(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = req.headers.token;
-        console.log("control  is in middleware");
-        console.log(token);
         if (!token) {
             res.status(403).json({
                 message: "token not found"
             });
             return;
         }
-        try {
-            const isValid = jsonwebtoken_1.default.verify(token, `${process.env.JWT_SECRET}`);
-            if (!isValid) {
-                res.status(403).json({
-                    message: "token not valid"
-                });
-                return;
-            }
-            req.body.userId = isValid.userId;
-            next();
-        }
-        catch (err) {
-            res.status(411).json({
-                message: "invalid token"
+        const isValid = jsonwebtoken_1.default.verify(token, `${process.env.JWT_SECRET}`);
+        if (!isValid) {
+            res.status(403).json({
+                message: "token not valid"
             });
+            return;
         }
+        req.body.userId = isValid.userId;
+        next();
     });
 }
