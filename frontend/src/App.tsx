@@ -1,0 +1,18 @@
+import { BrowserRouter as Router, Routes,Route } from "react-router-dom"
+import { Signup } from "./pages/Signup"
+import { Signin } from "./pages/Signin"
+
+export const App = () => {
+  return (
+        <Router>
+          <Routes>
+            <Route path="/signup" element={<Signup></Signup>}></Route>
+            <Route path="/signin" element={<Signin></Signin>}></Route>
+            <Route path="/dashboard"></Route>
+            <Route path="/send"></Route>
+
+          </Routes>
+
+        </Router>
+  )
+}
