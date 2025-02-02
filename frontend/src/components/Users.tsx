@@ -4,15 +4,16 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 
-export const Users = () => {
+export const Users = ({myData}:{myData:(e:any)=>void}) => {
     // Replace with backend call
     const [users, setUsers] = useState([]);
     const [filter, setFilter] = useState("");
 
     useEffect(() => {
-        axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter)
+        axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter,{headers:{token:localStorage.getItem('token')}})
             .then(response => {
                 setUsers(response.data.user)
+                myData(response.data.myProfile)
             })
     }, [filter])
 
@@ -26,7 +27,7 @@ export const Users = () => {
             }} type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>
         </div>
         <div>
-            {users.map(user => <User user={user} />)}
+            {users.map((user:any) => <User user={user} key={user?._id}/>)}
         </div>
     </>
 }

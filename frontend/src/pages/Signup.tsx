@@ -34,13 +34,15 @@ export const Signup = () => {
         <div className="pt-4">
           <Button onClick={async () => {
             const response = await axios.post("http://localhost:3000/api/v1/user/signup", {
-              username,
+              userName:username,
               firstName,
               lastName,
-              password
+              password,
+              amount:5000
             });
-            localStorage.setItem("token", response.data.token)
-            navigate("/dashboard")
+            if(response.data?.message =="signup sucessfull"){
+              navigate("/signin")
+            }
           }} label={"Sign up"} />
         </div>
         <BottomWarning label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />
