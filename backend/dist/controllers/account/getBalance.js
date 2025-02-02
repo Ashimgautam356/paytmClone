@@ -15,8 +15,7 @@ function getBalance(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const userId = req.body.userId;
         try {
-            const user = yield db_1.AccountModel.findOne(userId);
-            console.log(user);
+            const user = yield db_1.AccountModel.findOne({ userId: userId });
             res.status(200).json({
                 message: "success",
                 balance: user === null || user === void 0 ? void 0 : user.balance
@@ -24,7 +23,8 @@ function getBalance(req, res) {
         }
         catch (err) {
             res.status(500).json({
-                message: "internal server error"
+                message: "internal server error",
+                error: err
             });
         }
     });

@@ -30,6 +30,10 @@ export async function getusers(req:Request,res:Response){
                 lastName:user.lastName,
                 _id: user._id
 
+            })),
+            myProfile:users.filter(user=>user._id == req.body.userId).map(user=>({
+                firstName:user.firstName,
+                lastName:user.lastName
             }))
         })
     }catch(err){
