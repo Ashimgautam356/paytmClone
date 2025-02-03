@@ -5,4 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(),tailwindcss()],
+  server: {
+    host: "0.0.0.0",
+    port: 10000,
+  },
+  preview: {
+    host: "0.0.0.0",
+    port: 10000,
+    allowedHosts: ["paytmclone-frontend.onrender.com"],
+  },
 })
