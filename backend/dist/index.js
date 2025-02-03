@@ -11,7 +11,8 @@ const index_1 = require("./routes/index");
 const app = (0, express_1.default)();
 // conneting to the backend
 mongoose_1.default.connect(`${process.env.MONGO_CONNECTION}`);
-const myfrontend = ["https://paytmclone-frontend.onrender.com"];
+console.log(process.env.LOCAL_FRONTEND_URL);
+const myfrontend = [`${process.env.MAIN_FRONTEND_URL}`, `${process.env.LOCAL_FRONTEND_URL}`];
 app.use((0, cors_1.default)({
     optionsSuccessStatus: 200,
     origin: myfrontend

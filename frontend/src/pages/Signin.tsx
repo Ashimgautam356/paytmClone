@@ -7,6 +7,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 
+
+
+const baseurl = import.meta.env.VITE_BACKEND_URL
+
 export const Signin = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -27,7 +31,7 @@ export const Signin = () => {
         }} placeholder="123456" label={"Password"} />
         <div className="pt-4">
           <Button onClick={async () => {
-            const response = await axios.post("https://paytmclone-4t9l.onrender.com/api/v1/user/signin", {
+            const response = await axios.post(`${baseurl}/user/signin`, {
               userName:username,
               password
             });
