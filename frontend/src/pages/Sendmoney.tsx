@@ -11,7 +11,7 @@ export const SendMoney = () => {
     return <div className="flex justify-center h-screen bg-gray-100">
         <div className="h-full flex flex-col justify-center">
             <div className='py-4 underline'>
-                <Link to={'/dashboard'}>Back</Link>
+                <Link to={'/'}>Back</Link>
             </div>
             <div
                 className="border h-min text-card-foreground max-w-md p-4 space-y-8 w-96 bg-white shadow-lg rounded-lg"
