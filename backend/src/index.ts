@@ -10,7 +10,7 @@ const app = express()
 mongoose.connect(`${process.env.MONGO_CONNECTION}`)
 
 
-const myfrontend = ['http://localhost:5173']
+const myfrontend = ["https://paytmclone-frontend.onrender.com"]
 app.use(cors({
     optionsSuccessStatus:200,
     origin: myfrontend
