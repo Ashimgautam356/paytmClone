@@ -8,8 +8,14 @@ export const Users = ({myData}:{myData:(e:any)=>void}) => {
     // Replace with backend call
     const [users, setUsers] = useState([]);
     const [filter, setFilter] = useState("");
+    const navigate = useNavigate()
 
     useEffect(() => {
+        const isToken = localStorage.getItem("token")
+        console.log(isToken)
+        if(!isToken){
+            navigate("/signup")
+        }
         axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter,{headers:{token:localStorage.getItem('token')}})
             .then(response => {
                 setUsers(response.data.user)

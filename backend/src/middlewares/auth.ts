@@ -12,7 +12,8 @@ export async function auth(req:Request,res:Response,next:NextFunction) {
         })
         return; 
     }
-    const isValid:{userId:string,iat:number}|any = jwt.verify(token,`${process.env.JWT_SECRET}`)
+    try{
+        const isValid:{userId:string,iat:number}|any = jwt.verify(token,`${process.env.JWT_SECRET}`)
      
         if(!isValid){
             res.status(403).json({
@@ -24,5 +25,11 @@ export async function auth(req:Request,res:Response,next:NextFunction) {
 
         req.body.userId = isValid.userId; 
         next()
+    }catch(err){
+        res.status(500).json({
+            message:"internal server error"
+        })
+    }
+
     
 }
