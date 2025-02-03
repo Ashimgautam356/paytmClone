@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom"
 
 
 const baseurl = import.meta.env.VITE_BACKEND_URL
-
 export const Signup = () => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -36,7 +35,7 @@ export const Signup = () => {
         }} placeholder="123456" label={"Password"} />
         <div className="pt-4">
           <Button onClick={async () => {
-            const response = await axios.post(`${baseurl}/user/signup"`, {
+            const response = await axios.post(`${baseurl}/user/signup`, {
               userName:username,
               firstName,
               lastName,

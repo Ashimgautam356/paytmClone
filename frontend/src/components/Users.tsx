@@ -13,11 +13,10 @@ export const Users = ({myData}:{myData:(e:any)=>void}) => {
 
     useEffect(() => {
         const isToken = localStorage.getItem("token")
-        console.log(isToken)
         if(!isToken){
             navigate("/signup")
         }
-        axios.get(`${baseurl}/user/bulk?filter="` + filter,{headers:{token:localStorage.getItem('token')}})
+        axios.get(`${baseurl}/user/bulk?filter=` + filter,{headers:{token:localStorage.getItem('token')}})
             .then(response => {
                 setUsers(response.data.user)
                 myData(response.data.myProfile)

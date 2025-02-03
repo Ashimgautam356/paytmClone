@@ -7,7 +7,7 @@ const baseurl = import.meta.env.VITE_BACKEND_URL
 export const Balance = () => {
     const [bal,setBal] = useState(0)
     useEffect(()=>{
-        axios.get(`${baseurl}/account/balance"`,{headers:{token:localStorage.getItem("token")}}).then((response=>{
+        axios.get(`${baseurl}/account/balance`,{headers:{token:localStorage.getItem("token")}}).then((response=>{
             setBal(response.data.balance)
         }))
     },[])

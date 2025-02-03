@@ -9,6 +9,9 @@ const user_1 = require("../controllers/user/user");
 const auth_1 = require("../middlewares/auth");
 const allUsers_1 = require("../controllers/user/allUsers");
 exports.userRouter = express_1.default.Router();
+exports.userRouter.get('/hello', (req, res) => {
+    res.send("hello");
+});
 exports.userRouter.post('/signup', user_1.singup);
 exports.userRouter.post('/signin', user_1.signin);
 exports.userRouter.use(auth_1.auth);
