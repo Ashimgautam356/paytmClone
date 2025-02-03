@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 export const Balance = () => {
     const [bal,setBal] = useState(0)
     useEffect(()=>{
-        axios.get("http://localhost:3000/api/v1/account/balance",{headers:{token:localStorage.getItem("token")}}).then((response=>{
+        axios.get("https://paytmclone-4t9l.onrender.com/api/v1/account/balance",{headers:{token:localStorage.getItem("token")}}).then((response=>{
             setBal(response.data.balance)
         }))
     },[])

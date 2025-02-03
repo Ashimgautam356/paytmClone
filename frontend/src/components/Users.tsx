@@ -16,7 +16,7 @@ export const Users = ({myData}:{myData:(e:any)=>void}) => {
         if(!isToken){
             navigate("/signup")
         }
-        axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter,{headers:{token:localStorage.getItem('token')}})
+        axios.get("https://paytmclone-4t9l.onrender.com/api/v1/user/bulk?filter=" + filter,{headers:{token:localStorage.getItem('token')}})
             .then(response => {
                 setUsers(response.data.user)
                 myData(response.data.myProfile)
