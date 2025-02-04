@@ -40,6 +40,14 @@ const AccountTable = new mongoose.Schema({
     balance:{type:Number,min:0}
 })
 
+const StatementTable = new mongoose.Schema({
+    userId:{type:mongoose.Types.ObjectId, require:true, unique:true, ref:"User"},
+    method:{type:String, require:true},
+    remarks:{type:String},
+    balance:{type:Number,min:0}, 
+})
+
 export const UserModel = mongoose.model("User",UserSchema)
 export const AccountModel = mongoose.model('Account',AccountTable)
+export const StatementModel = mongoose.model('Statement',StatementTable)
 
