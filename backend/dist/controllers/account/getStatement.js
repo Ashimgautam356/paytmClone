@@ -15,7 +15,7 @@ function getStatement(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const userId = req.body.userId;
         try {
-            const user = yield db_1.StatementModel.findById({ userId: userId });
+            const user = yield db_1.StatementModel.find({ userId: userId });
             console.log(user);
             res.status(200).json({
                 message: "success",
@@ -23,6 +23,7 @@ function getStatement(req, res) {
             });
         }
         catch (err) {
+            console.log(err);
             res.status(500).json({
                 message: "internal server error",
                 error: err

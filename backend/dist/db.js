@@ -38,7 +38,7 @@ const AccountTable = new mongoose_1.default.Schema({
     balance: { type: Number, min: 0 }
 });
 const StatementTable = new mongoose_1.default.Schema({
-    userId: { type: mongoose_1.default.Types.ObjectId, require: true, unique: true, ref: "User" },
+    userId: { type: mongoose_1.default.Types.ObjectId, require: true, unique: false, ref: "User" },
     method: { type: String, require: true },
     to: { type: mongoose_1.default.Types.ObjectId, require: true, ref: "User" },
     remarks: { type: String },
