@@ -16,6 +16,7 @@ exports.transferMoney = transferMoney;
 const db_1 = require("../../db");
 const mongoose_1 = __importDefault(require("mongoose"));
 const zod_1 = __importDefault(require("zod"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 function transferMoney(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { balance, to, userId, transactionPin, remarks } = req.body;
@@ -40,6 +41,17 @@ function transferMoney(req, res) {
         }
         //    have to check the transcation pin first
         try {
+            console.log("into the try block ");
+            const senderPin = yield db_1.PinModel.findOne({ userId: userId });
+            console.log("yo ho sender pin ", senderPin);
+            const isCorrectPassword = yield bcrypt_1.default.compare(String(transactionPin), String(senderPin === null || senderPin === void 0 ? void 0 : senderPin.transactionPin));
+            console.log("password correct xa ra", isCorrectPassword);
+            if (!isCorrectPassword) {
+                res.status(403).json({
+                    message: "incorrect pin code"
+                });
+                return;
+            }
             const session = yield mongoose_1.default.startSession();
             session.startTransaction();
             const sender = yield db_1.AccountModel.findOne({ userId: userId }).session(session);

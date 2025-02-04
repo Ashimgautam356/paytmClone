@@ -16,7 +16,6 @@ function getStatement(req, res) {
         const userId = req.body.userId;
         try {
             const user = yield db_1.StatementModel.find({ userId: userId });
-            console.log(user);
             res.status(200).json({
                 message: "success",
                 statement: user

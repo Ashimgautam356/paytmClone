@@ -1,7 +1,8 @@
 import { Response,Request } from "express";
-import { AccountModel, StatementModel } from "../../db";
+import { AccountModel, PinModel, StatementModel } from "../../db";
 import mongoose from "mongoose";
 import z from 'zod'
+import bcrypt from 'bcrypt'
 
 
 export async function transferMoney(req:Request,res:Response) {
@@ -33,6 +34,16 @@ export async function transferMoney(req:Request,res:Response) {
     //    have to check the transcation pin first
    
     try{   
+        const senderPin = await PinModel.findOne({userId:userId})
+
+        const isCorrectPassword = await bcrypt.compare(String(transactionPin),String(senderPin?.transactionPin))
+        if(!isCorrectPassword){
+            res.status(403).json({
+                message:"incorrect pin code"
+            })
+            return
+        }
+
         const session = await mongoose.startSession();
 
 
@@ -81,6 +92,7 @@ export async function transferMoney(req:Request,res:Response) {
             message: "Transfer successful"
         });
     }catch(err){
+        console.log(err)
         res.status(500).json({
             message:"internal server error"
         })
