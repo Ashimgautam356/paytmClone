@@ -1,16 +1,37 @@
 import { Response,Request } from "express";
-import { AccountModel } from "../../db";
+import { AccountModel, StatementModel } from "../../db";
 import mongoose from "mongoose";
+import z from 'zod'
+
 
 export async function transferMoney(req:Request,res:Response) {
-    const {balance,to,userId } = req.body
+    const {balance,to,userId,transactionPin,remarks} = req.body
 
-    if(!balance || typeof balance !== 'number'  ){
-        res.status(400).json({
-            message:"enter valid balance"
-        })
-        return;
-    }
+   const UserInput = z.object({
+            remarks: z.string().optional(),
+            balance: z.number().positive().min(1).max(10000),
+            transactionPin:z.number().positive().min(1).max(999999)
+       })
+   
+       const isValid = UserInput.safeParse({
+            remarks: req.body.remarks,
+            balance:req.body.balance,
+            transactionPin:req.body.transactionPin
+       })
+   
+       if(!isValid.success){
+           const errorMessage = isValid.error.formErrors
+           res.status(411).json({
+               remarks:errorMessage.fieldErrors.remarks,
+               balance:errorMessage.fieldErrors.balance,
+               transactionPin:errorMessage.fieldErrors.transactionPin
+           })
+   
+           return;
+       }
+
+    //    have to check the transcation pin first
+   
     try{   
         const session = await mongoose.startSession();
 
@@ -39,7 +60,21 @@ export async function transferMoney(req:Request,res:Response) {
 
         await AccountModel.updateOne({ userId: userId }, { $inc: { balance: -balance } }).session(session);
         await AccountModel.updateOne({ userId: to }, { $inc: { balance: balance } }).session(session);
-
+        await StatementModel.create([{
+            userId:userId,
+            method:"Debit",
+            remarks:remarks, 
+            balance:balance,
+            to:to
+        }],{session:session});
+        
+        await StatementModel.create([{
+            userId:to,
+            method:"Credit",
+            remarks:remarks, 
+            balance:balance,
+            to:userId
+        }],{session:session})
 
         await session.commitTransaction();
         res.json({

@@ -15,15 +15,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.transferMoney = transferMoney;
 const db_1 = require("../../db");
 const mongoose_1 = __importDefault(require("mongoose"));
+const zod_1 = __importDefault(require("zod"));
 function transferMoney(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { balance, to, userId } = req.body;
-        if (!balance || typeof balance !== 'number') {
-            res.status(400).json({
-                message: "enter valid balance"
+        const { balance, to, userId, transactionPin, remarks } = req.body;
+        const UserInput = zod_1.default.object({
+            remarks: zod_1.default.string().optional(),
+            balance: zod_1.default.number().positive().min(1).max(10000),
+            transactionPin: zod_1.default.number().positive().min(1).max(999999)
+        });
+        const isValid = UserInput.safeParse({
+            remarks: req.body.remarks,
+            balance: req.body.balance,
+            transactionPin: req.body.transactionPin
+        });
+        if (!isValid.success) {
+            const errorMessage = isValid.error.formErrors;
+            res.status(411).json({
+                remarks: errorMessage.fieldErrors.remarks,
+                balance: errorMessage.fieldErrors.balance,
+                transactionPin: errorMessage.fieldErrors.transactionPin
             });
             return;
         }
+        //    have to check the transcation pin first
         try {
             const session = yield mongoose_1.default.startSession();
             session.startTransaction();
@@ -45,6 +60,20 @@ function transferMoney(req, res) {
             }
             yield db_1.AccountModel.updateOne({ userId: userId }, { $inc: { balance: -balance } }).session(session);
             yield db_1.AccountModel.updateOne({ userId: to }, { $inc: { balance: balance } }).session(session);
+            yield db_1.StatementModel.create([{
+                    userId: userId,
+                    method: "Debit",
+                    remarks: remarks,
+                    balance: balance,
+                    to: to
+                }], { session: session });
+            yield db_1.StatementModel.create([{
+                    userId: to,
+                    method: "Credit",
+                    remarks: remarks,
+                    balance: balance,
+                    to: userId
+                }], { session: session });
             yield session.commitTransaction();
             res.json({
                 message: "Transfer successful"

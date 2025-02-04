@@ -43,6 +43,7 @@ const AccountTable = new mongoose.Schema({
 const StatementTable = new mongoose.Schema({
     userId:{type:mongoose.Types.ObjectId, require:true, unique:true, ref:"User"},
     method:{type:String, require:true},
+    to:{type:mongoose.Types.ObjectId,require:true, ref:"User"},
     remarks:{type:String},
     balance:{type:Number,min:0}
 },{timestamps:true})

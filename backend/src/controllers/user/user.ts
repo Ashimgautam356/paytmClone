@@ -1,7 +1,7 @@
 import {Response,Request} from 'express'
 import z from 'zod'
 import bcrypt from 'bcrypt'
-import {AccountModel, UserModel} from '../../db'
+import {AccountModel, PinModel, UserModel} from '../../db'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 
@@ -13,7 +13,8 @@ export  async function singup(req:Request,res:Response){
         password:z.string().min(6),
         firstName:z.string().trim().max(40),
         lastName:z.string().trim().max(40),
-        amount: z.number().positive().min(1).max(10000)
+        amount: z.number().positive().min(1).max(10000),
+        transactionPin:z.number().positive().min(1).max(999999)
     })
 
     const isValid = UserInput.safeParse({
@@ -21,7 +22,8 @@ export  async function singup(req:Request,res:Response){
         password:req.body.password,
         firstName:req.body.firstName,
         lastName:req.body.lastName,
-        amount:req.body.amount
+        amount:req.body.amount,
+        transactionPin:req.body.transactionPin
     })
 
     if(!isValid.success){
@@ -31,7 +33,8 @@ export  async function singup(req:Request,res:Response){
             password:errorMessage.fieldErrors.password,
             firstName:errorMessage.fieldErrors.firstName,
             lastName:errorMessage.fieldErrors.lastName,
-            amount:errorMessage.fieldErrors.amount
+            amount:errorMessage.fieldErrors.amount,
+            transactionPin:errorMessage.fieldErrors.transactionPin
         })
 
         return;
@@ -40,6 +43,8 @@ export  async function singup(req:Request,res:Response){
 
     try{
         const hashedPassword = await bcrypt.hash(req.body.password,5);
+        const hashedPin = await bcrypt.hash(String(req.body.transactionPin),6);
+
         const userid = await UserModel.create({
             userName:req.body.userName,
             password:hashedPassword,
@@ -52,6 +57,11 @@ export  async function singup(req:Request,res:Response){
             balance:req.body.amount
         })
         
+        await PinModel.create({
+            userId:userid._id,
+            transactionPin:hashedPin
+        })
+
         res.status(200).json({
             message:"signup sucessfull"
         })
@@ -64,6 +74,7 @@ export  async function singup(req:Request,res:Response){
             return 
         }
 
+        console.log(err)
         res.status(500).json({
             message:"internal server error",
             error:err

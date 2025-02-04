@@ -27,14 +27,16 @@ function singup(req, res) {
             password: zod_1.default.string().min(6),
             firstName: zod_1.default.string().trim().max(40),
             lastName: zod_1.default.string().trim().max(40),
-            amount: zod_1.default.number().positive().min(1).max(10000)
+            amount: zod_1.default.number().positive().min(1).max(10000),
+            transactionPin: zod_1.default.number().positive().min(1).max(999999)
         });
         const isValid = UserInput.safeParse({
             userName: req.body.userName,
             password: req.body.password,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
-            amount: req.body.amount
+            amount: req.body.amount,
+            transactionPin: req.body.transactionPin
         });
         if (!isValid.success) {
             const errorMessage = isValid.error.formErrors;
@@ -43,12 +45,14 @@ function singup(req, res) {
                 password: errorMessage.fieldErrors.password,
                 firstName: errorMessage.fieldErrors.firstName,
                 lastName: errorMessage.fieldErrors.lastName,
-                amount: errorMessage.fieldErrors.amount
+                amount: errorMessage.fieldErrors.amount,
+                transactionPin: errorMessage.fieldErrors.transactionPin
             });
             return;
         }
         try {
             const hashedPassword = yield bcrypt_1.default.hash(req.body.password, 5);
+            const hashedPin = yield bcrypt_1.default.hash(String(req.body.transactionPin), 6);
             const userid = yield db_1.UserModel.create({
                 userName: req.body.userName,
                 password: hashedPassword,
@@ -58,6 +62,10 @@ function singup(req, res) {
             yield db_1.AccountModel.create({
                 userId: userid._id,
                 balance: req.body.amount
+            });
+            yield db_1.PinModel.create({
+                userId: userid._id,
+                transactionPin: hashedPin
             });
             res.status(200).json({
                 message: "signup sucessfull"
@@ -70,6 +78,7 @@ function singup(req, res) {
                 });
                 return;
             }
+            console.log(err);
             res.status(500).json({
                 message: "internal server error",
                 error: err
