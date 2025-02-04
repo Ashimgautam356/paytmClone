@@ -39,18 +39,27 @@ function transferMoney(req, res) {
             });
             return;
         }
-        //    have to check the transcation pin first
         try {
-            console.log("into the try block ");
             const senderPin = yield db_1.PinModel.findOne({ userId: userId });
-            console.log("yo ho sender pin ", senderPin);
+            const currentAttempt = senderPin === null || senderPin === void 0 ? void 0 : senderPin.failedAttempts;
             const isCorrectPassword = yield bcrypt_1.default.compare(String(transactionPin), String(senderPin === null || senderPin === void 0 ? void 0 : senderPin.transactionPin));
-            console.log("password correct xa ra", isCorrectPassword);
             if (!isCorrectPassword) {
+                yield db_1.PinModel.updateOne({ userId: userId }, { $inc: { failedAttempts: 1 } });
+                if (currentAttempt + 1 == 3) {
+                    res.status(403).json({
+                        message: "incorrect pin code",
+                        accountStatus: "your accout has been blocked"
+                    });
+                    return;
+                }
                 res.status(403).json({
-                    message: "incorrect pin code"
+                    message: "incorrect pin code",
+                    attemptRemeaning: 3 - currentAttempt
                 });
                 return;
+            }
+            if (currentAttempt > 0) {
+                yield db_1.PinModel.updateOne({ userId: userId }, { $set: { failedAttempts: 0 } });
             }
             const session = yield mongoose_1.default.startSession();
             session.startTransaction();

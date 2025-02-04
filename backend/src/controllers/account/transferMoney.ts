@@ -31,17 +31,30 @@ export async function transferMoney(req:Request,res:Response) {
            return;
        }
 
-    //    have to check the transcation pin first
    
     try{   
         const senderPin = await PinModel.findOne({userId:userId})
-
+        const currentAttempt = senderPin?.failedAttempts as number;
         const isCorrectPassword = await bcrypt.compare(String(transactionPin),String(senderPin?.transactionPin))
+
         if(!isCorrectPassword){
+            await PinModel.updateOne({userId:userId}, { $inc: { failedAttempts: 1 } })
+            if(currentAttempt+1 == 3){
+                res.status(403).json({
+                    message:"incorrect pin code",
+                    accountStatus:"your accout has been blocked"
+                })
+                return;
+            }
             res.status(403).json({
-                message:"incorrect pin code"
+                message:"incorrect pin code",
+                attemptRemeaning: 3-currentAttempt
             })
-            return
+            return;
+        }
+        
+        if(currentAttempt>0){
+            await PinModel.updateOne({userId:userId}, { $set: { failedAttempts: 0 } })
         }
 
         const session = await mongoose.startSession();
