@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const baseurl = import.meta.env.VITE_BACKEND_URL
 
-export const Users = ({myData}:{myData:(e:any)=>void}) => {
+export const Users = () => {
     // Replace with backend call
     const [users, setUsers] = useState([]);
     const [filter, setFilter] = useState("");
@@ -19,15 +19,12 @@ export const Users = ({myData}:{myData:(e:any)=>void}) => {
         axios.get(`${baseurl}/user/bulk?filter=` + filter,{headers:{token:localStorage.getItem('token')}})
             .then(response => {
                 setUsers(response.data.user)
-                myData(response.data.myProfile)
+                // myData(response.data.myProfile)
             })
     }, [filter])
 
     return <>
-        <div className="font-bold mt-6 text-lg">
-            Users
-        </div>
-        <div className="my-2">
+        <div className="my-2  mt-6">
             <input onChange={(e) => {
                 setFilter(e.target.value)
             }} type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>

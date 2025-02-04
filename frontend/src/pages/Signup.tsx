@@ -14,6 +14,8 @@ export const Signup = () => {
     const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [pin,setPin] = useState("")
+
     const navigate = useNavigate();
 
     return <div className="bg-slate-300 h-screen flex justify-center">
@@ -33,6 +35,9 @@ export const Signup = () => {
         <InputBox onChange={(e:any) => {
           setPassword(e.target.value)
         }} placeholder="123456" label={"Password"} />
+        <InputBox onChange={(e:any) => {
+          setPin(e.target.value)
+        }} placeholder="123456" label={"Enter your transaction Pin"} />
         <div className="pt-4">
           <Button onClick={async () => {
             const response = await axios.post(`${baseurl}/user/signup`, {
@@ -40,7 +45,8 @@ export const Signup = () => {
               firstName,
               lastName,
               password,
-              amount:5000
+              amount:5000,
+              transactionPin:Number(pin)
             });
             if(response.data?.message =="signup sucessfull"){
               navigate("/signin")
