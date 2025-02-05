@@ -1,26 +1,21 @@
-import { useEffect, useState } from "react"
+import { useState,useEffect } from "react"
 import { Button } from "./Button"
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useGetUsersQuery } from "../store/api/service";
 
-const baseurl = import.meta.env.VITE_BACKEND_URL
 
 export const Users = () => {
     // Replace with backend call
-    const [users, setUsers] = useState([]);
     const [filter, setFilter] = useState("");
     const navigate = useNavigate()
 
+    const {data,isLoading,error,isError} = useGetUsersQuery(filter)
+    
     useEffect(() => {
         const isToken = localStorage.getItem("token")
         if(!isToken){
             navigate("/signup")
         }
-        axios.get(`${baseurl}/user/bulk?filter=` + filter,{headers:{token:localStorage.getItem('token')}})
-            .then(response => {
-                setUsers(response.data.user)
-                // myData(response.data.myProfile)
-            })
     }, [filter])
 
     return <>
@@ -30,9 +25,9 @@ export const Users = () => {
             }} type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>
         </div>
         <div>
-            {users.map((user:any) => <User user={user} key={user?._id}/>)}
+            {data?.user.map((user:any) => <User user={user} key={user?._id}/>)}
         </div>
-    </>
+    </> 
 }
 
 function User({user}:any) {

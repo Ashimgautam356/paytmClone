@@ -117,7 +117,6 @@ export async function signin(req:Request,res:Response){
         }
     
         const isCorrectPassword = await bcrypt.compare(req.body.password,String(isUserValid.password))
-       
         if(!isCorrectPassword){
             res.status(411).json({
                 message:"password is incorrect"
@@ -128,8 +127,12 @@ export async function signin(req:Request,res:Response){
         const token = jwt.sign({
             userId: isUserValid._id
         },`${process.env.JWT_SECRET}`)
+
+        const userBalance = await AccountModel.findOne({userId:isUserValid._id});
         res.status(200).json({
             message:"login sucessfull",
+            userFirstName:isUserValid.firstName,
+            balance:userBalance?.balance,
             token: token
         })
     

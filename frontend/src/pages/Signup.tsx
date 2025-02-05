@@ -6,7 +6,7 @@ import { InputBox } from "../components/InputBox"
 import { SubHeading } from "../components/SubHeading"
 import axios from "axios";
 import { useNavigate } from "react-router-dom"
-
+import { useUserSignupMutation } from "../store/api/service"
 
 const baseurl = import.meta.env.VITE_BACKEND_URL
 export const Signup = () => {
@@ -15,6 +15,24 @@ export const Signup = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [pin,setPin] = useState("")
+
+
+    const [newUser] = useUserSignupMutation()
+    
+    const handleSubmit = async()=>{
+         const response = await newUser({
+          userName:username,
+          firstName,
+          lastName,
+          password,
+          amount:5000,
+          transactionPin:Number(pin)
+        });
+
+        if(response.data?.message =="signup sucessfull"){
+          navigate("/signin")
+        }
+    }
 
     const navigate = useNavigate();
 
@@ -39,19 +57,7 @@ export const Signup = () => {
           setPin(e.target.value)
         }} placeholder="123456" label={"Enter your transaction Pin"} />
         <div className="pt-4">
-          <Button onClick={async () => {
-            const response = await axios.post(`${baseurl}/user/signup`, {
-              userName:username,
-              firstName,
-              lastName,
-              password,
-              amount:5000,
-              transactionPin:Number(pin)
-            });
-            if(response.data?.message =="signup sucessfull"){
-              navigate("/signin")
-            }
-          }} label={"Sign up"} />
+          <Button onClick={handleSubmit} label={"Sign up"} />
         </div>
         <BottomWarning label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />
       </div>

@@ -121,8 +121,11 @@ function signin(req, res) {
         const token = jsonwebtoken_1.default.sign({
             userId: isUserValid._id
         }, `${process.env.JWT_SECRET}`);
+        const userBalance = yield db_1.AccountModel.findOne({ userId: isUserValid._id });
         res.status(200).json({
             message: "login sucessfull",
+            userFirstName: isUserValid.firstName,
+            balance: userBalance === null || userBalance === void 0 ? void 0 : userBalance.balance,
             token: token
         });
     });

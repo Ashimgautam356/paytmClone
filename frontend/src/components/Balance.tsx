@@ -1,23 +1,17 @@
-import axios from "axios"
-import { useEffect, useState } from "react"
+
+import { useUserBalanceQuery } from "../store/api/service"
 
 
-const baseurl = import.meta.env.VITE_BACKEND_URL
 
 export const Balance = () => {
-    const [bal,setBal] = useState(0)
-    useEffect(()=>{
-        axios.get(`${baseurl}/account/balance`,{headers:{token:localStorage.getItem("token")}}).then((response=>{
-            setBal(response.data.balance)
-        }))
-    },[])
-
-  return <div className="flex">
-      <div className="font-bold text-lg">
-          Your balance
+    const {data,isLoading,error,isError} = useUserBalanceQuery()
+    
+  return <div className="flex p-4">
+      <div className="font-semibold text-lg text-gray-400">
+          Your Balance
       </div>
-      <div className="font-semibold ml-4 text-lg">
-          Rs {bal}
+      <div className="font-semibold ml-4 text-lg text-gray-500">
+          Rs {data?.balance }
       </div>
   </div>
 }

@@ -1,16 +1,12 @@
-import { useEffect } from "react"
+import { useUserStatementQuery } from "../store/api/service"
 
 export const Statement = () => {
-    const data = [
-        {userId:"asdfasdf234er2",method:"Debit",to:"asdfasdf23424",remarks:"one",balance:50,createdAt:"2025-02-04T17:51:43.387Z"},
-        {userId:"asdfasdf234er2",method:"Credit",to:"asdfasdf23424",remarks:"one",balance:50,createdAt:"2025-02-04T17:51:43.387Z"},
-        {userId:"asdfasdf234er2",method:"Credit",to:"asdfasdf23424",remarks:"one",balance:50,createdAt:"2025-02-04T17:51:43.387Z"},
-    
-    ]
+    const{data,isLoading,error,isError} = useUserStatementQuery()
+
   return (
     <div className="">
         {
-            data.map((info,id)=>{return(
+           data?.statement.length>0? data?.statement?.map((info:any,id:any)=>{return(
                 <div className="border-r border-l  border-yellow-400 py-2 m-8 flex text-sm" key={id}>
                     {
                         info?.method == "Debit"?(<>
@@ -34,7 +30,7 @@ export const Statement = () => {
                         )
                     }
                 </div>
-            )})
+            )}): (<p className="mt-10 w-full text-center text-gray-400">No Statement Found!!!</p>)
         }
     </div>
   )
