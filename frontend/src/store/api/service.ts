@@ -54,10 +54,27 @@ export const serviceApi = createApi({
             query: ()=> '/account/balance'
         }),
 
+        // transfer Money
+        sendMoney: builder.mutation({
+            query:(userData)=>({
+                url:'/account/transfer',
+                method: 'POST',
+                body:userData,
+            })
+        }),
+
+        updateInfo: builder.mutation({
+            query: (userData)=>({
+                url:'user/update',
+                method: 'PATCH',
+                body:userData
+            })
+        })
+
 
     })
 
 })
 
-export const {useGetUsersQuery,useUserSignupMutation,useUserSigninMutation,useUserStatementQuery,useUserBalanceQuery} = serviceApi
+export const {useGetUsersQuery,useUserSignupMutation,useUserSigninMutation,useUserStatementQuery,useUserBalanceQuery,useSendMoneyMutation,useUpdateInfoMutation} = serviceApi
 

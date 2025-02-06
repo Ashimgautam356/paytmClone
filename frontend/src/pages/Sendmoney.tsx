@@ -1,6 +1,8 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from "axios";
 import { useState } from 'react';
+import { useSendMoneyMutation } from '../store/api/service';
+import { Alert } from '../components/Alert';
 
 const baseurl = import.meta.env.VITE_BACKEND_URL
 
@@ -9,6 +11,27 @@ export const SendMoney = () => {
     const id = searchParams.get("id");
     const name = searchParams.get("name");
     const [amount, setAmount] = useState(0);
+    const [pin,setPin] = useState(0)
+    const [remarks,setRemarks] = useState("")
+
+
+    const [userData] = useSendMoneyMutation()
+    const navigate = useNavigate()
+    const inputHandler = async ()=>{
+        const response = await userData({
+            to: id,
+            balance:Number(amount),
+            remarks:remarks,
+            transactionPin:Number(pin)
+        })
+
+
+        if(response.data?.message == 'Transfer successful'){
+            navigate("/");
+            <Alert message='success' />
+        }
+
+    }
 
     return <div className="flex justify-center h-screen bg-gray-100">
         <div className="h-full flex flex-col justify-center">
@@ -43,24 +66,41 @@ export const SendMoney = () => {
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         id="amount"
                         placeholder="Enter amount"
+                        required
                     />
+                    <label
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        Enter Your Pin
+                    </label>
+                    <input
+                        onChange={(e:any) => {
+                            setPin(e.target.value);
+                        }}
+                        type="number"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        id="pin"
+                        placeholder="Enter Pin"
+                        required
+                    />
+                    <label
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        Remarks
+                    </label>
+                    <input
+                        onChange={(e:any) => {
+                            setRemarks(e.target.value);
+                        }}
+                        type="text"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        id="remarks"
+                        placeholder="Rent"
+                        required
+                    />
+                    
                     </div>
-                    <button onClick={() => {
-                        axios.post(`${baseurl}/account/transfer`, {
-                            to: id,
-                            balance:Number(amount)
-                        }, {
-                            headers: {
-                                token: localStorage.getItem("token")
-                            }
-                        }).then(resp => {
-                            if(resp.status==200){
-                                alert("transfer successfull")
-                            }
-                        })
-
-                        
-                    }} className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
+                    <button onClick={inputHandler} className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
                         Initiate Transfer
                     </button>
                 </div>

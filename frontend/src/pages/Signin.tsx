@@ -27,11 +27,12 @@ export const Signin = () => {
      });
 
      if(response?.data?.message == "login sucessfull"){
-      const firstName = response?.data?.userFirstName
+      const firstName = response?.data?.firstName
       const balance = response?.data?.balance
-
+      const userId = response?.data?.userId
+      const lastName = response?.data?.lastName
         localStorage.setItem("token", response.data.token)
-        dispatch(userInfo({firstName,balance}))
+        dispatch(userInfo({firstName,lastName,balance,userId}))
         
         navigate("/")
      }
