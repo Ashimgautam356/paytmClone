@@ -1,8 +1,10 @@
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import z from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateInfoMutation } from '../store/api/service';
+import {userInfo} from '../store/slice/userSlice'
+
 
 const userSchema = z.object({
     firstName: z.string()
@@ -37,29 +39,41 @@ type FormField = z.infer<typeof userSchema>
 
 
 export const UpdateInfo = () => {
+  const user = useSelector((state:any) => state.user)
+
+
     const {register,handleSubmit,formState:{errors,isSubmitting},setError} = useForm<FormField>({
-        resolver: zodResolver(userSchema)
+        resolver: zodResolver(userSchema),
+        defaultValues:{
+          firstName:user.firstName,
+          lastName:user.lastName
+        }
     })
 
-    const user = useSelector((state:any) => state.user)
+    const dispatch = useDispatch()
 
     const [updateInfo, { isLoading }] = useUpdateInfoMutation()
 
     const onSubmit:SubmitHandler<FormField> = async(data:any)=>{
         try {
-            await updateInfo(data).unwrap();
+            const result = await updateInfo(data).unwrap();
+            dispatch(userInfo({
+               firstName: result.data?.firstName ,
+                lastName: result.data?.lastName, 
+              }));
+
             alert("Information updated successfully!");
         } catch (error: any) {
             setError("root", { message: error?.data?.message || "Something went wrong!" });
         }
     }
   return (
-    <div className='p-4 flex flex-col mt-10'>
-        <div className='w-full'>
+    <div className='p-4 flex flex-col mt-10 '>
+        <div className='w-full '>
             <p className='text-xl text-gray-600 font-semibold text-center'>Update Information !</p>
         </div>
-        <div className='mt-4 w-full flex justify-center items-center'>
-            <form onSubmit={handleSubmit(onSubmit)} className='border border-red-400 flex flex-col'>
+        <div className='mt-4 w-full flex justify-center items-center '>
+            <form onSubmit={handleSubmit(onSubmit)} className='bg-white shadow-lg rounded-xl p-2 flex flex-col'>
                 <div className='my-4 flex justify-between items-center'>
                     <label htmlFor="firstName" className='px-4'>First Name: </label>
                     <input defaultValue={user?.firstName} {...register("firstName")} className='border-b border-black p-2'type='text' />
@@ -67,7 +81,7 @@ export const UpdateInfo = () => {
                 </div>
                 <div className='my-4 flex justify-between items-center'>
                     <label htmlFor="lastName" className='px-4'>Last Name: </label>
-                    <input defaultValue={user?.lastName} {...register("lastName")} className='border-b border-black p-2' type='text' />
+                    <input defaultValue={user?.lastName} {...register("lastName")} className='border-b border-black p-2' type='text' />     
                     
                 </div>
                 <div className='w-full mt-4 flex justify-center items-center text-gray-400'>

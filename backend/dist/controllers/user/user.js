@@ -124,8 +124,10 @@ function signin(req, res) {
         const userBalance = yield db_1.AccountModel.findOne({ userId: isUserValid._id });
         res.status(200).json({
             message: "login sucessfull",
-            userFirstName: isUserValid.firstName,
+            firstName: isUserValid.firstName,
+            lastName: isUserValid.lastName,
             balance: userBalance === null || userBalance === void 0 ? void 0 : userBalance.balance,
+            userId: isUserValid === null || isUserValid === void 0 ? void 0 : isUserValid._id,
             token: token
         });
     });

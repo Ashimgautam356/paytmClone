@@ -131,8 +131,10 @@ export async function signin(req:Request,res:Response){
         const userBalance = await AccountModel.findOne({userId:isUserValid._id});
         res.status(200).json({
             message:"login sucessfull",
-            userFirstName:isUserValid.firstName,
+            firstName:isUserValid.firstName,
+            lastName:isUserValid.lastName,
             balance:userBalance?.balance,
+            userId:isUserValid?._id,
             token: token
         })
     
