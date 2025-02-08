@@ -4,7 +4,7 @@ import { useUserBalanceQuery } from "../store/api/service"
 
 
 export const Balance = () => {
-    const {data,isLoading,error,isError} = useUserBalanceQuery()
+    const {data} = useUserBalanceQuery()
     
   return <div className="flex p-4">
       <div className="font-semibold text-lg text-gray-400">

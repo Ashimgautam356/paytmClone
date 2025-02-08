@@ -8,7 +8,7 @@ export const Users = () => {
     const [filter, setFilter] = useState("");
     const navigate = useNavigate()
 
-    const {data,isLoading,error,isError} = useGetUsersQuery(filter)
+    const {data} = useGetUsersQuery(filter)
     
     useEffect(() => {
         const isToken = localStorage.getItem("token")

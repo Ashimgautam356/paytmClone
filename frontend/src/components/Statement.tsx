@@ -1,7 +1,7 @@
 import { useUserStatementQuery } from "../store/api/service"
 
 export const Statement = () => {
-    const{data,isLoading,error,isError} = useUserStatementQuery()
+    const{data} = useUserStatementQuery()
 
   return (
     <div className="">

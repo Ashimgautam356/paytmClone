@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import { logoutUser } from "../store/slice/userSlice"
-import { UseDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 
 
