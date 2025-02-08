@@ -37,12 +37,11 @@ export const Signin = () => {
           userName:data.email,
           password:data.password
         }).unwrap();
-        console.log(response)
-        if(response?.data?.message == "login sucessfull"){
-         const firstName = response?.data?.firstName
-         const lastName = response?.data?.lastName
+        if(response?.message == "login sucessfull"){
+         const firstName = response?.firstName
+         const lastName = response?.lastName
    
-           localStorage.setItem("token", response.data.token)
+           localStorage.setItem("token", response?.token)
            dispatch(userInfo({firstName,lastName}))
            navigate("/")
         }

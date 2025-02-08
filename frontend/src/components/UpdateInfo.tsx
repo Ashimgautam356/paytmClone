@@ -19,12 +19,12 @@ const userSchema = z.object({
       .optional()
       .or(z.literal("")),
 
-    oldPassword: z.string()
+    oldpassword: z.string()
       .min(6, { message: "Old password must be at least 6 characters" })
       .optional()
       .or(z.literal("")),
 
-    newPassword: z.string()
+    newpassword: z.string()
       .optional()
       .refine((val) => !val || val.length >= 6, {
         message: "New password must be at least 6 characters",
@@ -56,6 +56,7 @@ export const UpdateInfo = () => {
 
     const onSubmit:SubmitHandler<FormField> = async(data:any)=>{
         try {
+          console.log(data)
             const result = await updateInfo(data).unwrap();
             dispatch(userInfo({
                firstName: result.data?.firstName ,
@@ -89,11 +90,11 @@ export const UpdateInfo = () => {
                 </div>
                 <div className='m2-4 flex justify-between items-center'>
                     <label htmlFor="new Password" className='px-4'>New Password: </label>
-                    <input {...register("newPassword")} placeholder='new Password'className='border-b border-black p-2' type='password'/>
+                    <input {...register("newpassword")} placeholder='new Password'className='border-b border-black p-2' type='password'/>
                 </div>
                 <div className='my-4 flex justify-between items-center'>
                     <label htmlFor="old Password" className='px-4'>Old Password: </label>
-                    <input {...register("oldPassword")} placeholder='old Password' className='border-b border-black p-2' type='password' />
+                    <input {...register("oldpassword")} placeholder='old Password' className='border-b border-black p-2' type='password' />
                 </div>
 
                 {errors.root && <p className="text-red-500 text-center">{errors.root.message}</p>}
