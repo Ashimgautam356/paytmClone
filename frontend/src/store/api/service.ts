@@ -5,7 +5,7 @@ export const serviceApi = createApi({
     reducerPath:"serviceApi",
     baseQuery:fetchBaseQuery({
         baseUrl:`${import.meta.env.VITE_BACKEND_URL}`,
-        prepareHeaders:(headers,{getState})=>{
+        prepareHeaders:(headers)=>{
             const token = localStorage.getItem('token'); // Get token from Redux state
       
             if (token) {

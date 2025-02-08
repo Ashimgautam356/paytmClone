@@ -5,10 +5,10 @@ import { PayloadAction } from "@reduxjs/toolkit";
 
 const showComponentSlice = createSlice({
     name:"showCompenet",
-    initialState:false, 
+    initialState:{value:false}, 
     reducers:{
-        setComponent: (state, action: PayloadAction<boolean>) => {
-            return action.payload; // Directly set state to the payload value
+        setComponent: (state,action: PayloadAction<boolean>) => {
+            state.value = action.payload
         },
     }
 })
