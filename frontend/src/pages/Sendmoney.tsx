@@ -46,7 +46,7 @@ const onSubmit: SubmitHandler<formField> = async (data: any) => {
         }
     }catch(err:any){
         console.log(err)
-        setError("root",{ message:`${err?.data?.message} ${err?.data.accountStatus?err?.data.accountStatus:""} ${err?.data?.attemptRemeaning ?err?.data?.attemptRemeaning:''}` ||  "Something went wrong!"} )
+        setError("root",{ message:`${err?.data?.message} ${err?.data.accountStatus?"accountStatus "+err?.data.accountStatus:""} ${err?.data?.attemptRemeaning ? "attemptRemeaning "+err?.data?.attemptRemeaning:''}` ||  "Something went wrong!"} )
     }
 
 

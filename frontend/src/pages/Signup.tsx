@@ -20,7 +20,7 @@ type FormField = z.infer<typeof userSignup>
 
 export const Signup = () => {
  
-   const [newUser] = useUserSignupMutation()
+   const [newUser,{isLoading}] = useUserSignupMutation()
     const navigate = useNavigate();
 
     const {register,handleSubmit,formState:{errors,isSubmitting},setError} = useForm<FormField>({
@@ -87,7 +87,13 @@ export const Signup = () => {
           {errors.root && <p className='text-red-500 text-sm text-left ' >{errors.root?.message}</p>}
 
           <div className="pt-4">
-          <button type="submit" className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8" disabled={isSubmitting}>{isSubmitting? "Loading" :"Sign up"}</button>
+            {
+                isLoading?(<button type="submit" className="w-full text-white bg-gray-400 hover:bg-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 cursor-wait" disabled={isLoading}>{isLoading? "Loading" :"Sign up"}</button>):(
+              <button type="submit" className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 cursor-pointer" disabled={isSubmitting}>{isSubmitting? "Loading" :"Sign up"}</button>)
+
+              
+            }
+          
           </div>
         </form>
         <BottomWarning label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />

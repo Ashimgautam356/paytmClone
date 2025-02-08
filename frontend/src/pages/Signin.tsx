@@ -27,7 +27,7 @@ export const Signin = () => {
     })
 
 
-    const[newUser]= useUserSigninMutation()
+    const[newUser,{isLoading}]= useUserSigninMutation()
     const dispatch = useDispatch()
 
     const onSubmit:SubmitHandler<FormField> = async(data:any)=>{
@@ -72,10 +72,10 @@ export const Signin = () => {
 
           </div>
           {errors.root && <p className='text-red-500 text-sm text-left ' >{errors.root?.message}</p>}
-          {isSubmitting?(
-            <button type="submit" className="w-full text-white bg-gray-400 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8" disabled={true}>Loading!!!</button>
+          {isLoading?(
+            <button type="submit" className="w-full text-white bg-gray-400 hover:bg-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 cursor-wait" disabled={true}>Loading!!!</button>
           ):(
-            <button type="submit" className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8" >{isSubmitting? "Loading" :"Sign in"}</button>
+            <button type="submit" className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mt-8 cursor-pointer" >{isSubmitting? "Loading" :"Sign in"}</button>
           )}
           
         </form>

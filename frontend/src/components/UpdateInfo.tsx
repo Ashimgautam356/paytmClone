@@ -56,10 +56,13 @@ export const UpdateInfo = () => {
 
     const onSubmit:SubmitHandler<FormField> = async(data:any)=>{
         try {
-          console.log(data)
-            const result = await updateInfo(data).unwrap();
+          const filteredData = Object.fromEntries(
+            Object.entries(data).filter(([_, value]) => value !== "")
+        );
+
+        const result = await updateInfo(filteredData).unwrap();
             dispatch(userInfo({
-               firstName: result.data?.firstName ,
+               firstName: result.data?.firstName,
                 lastName: result.data?.lastName, 
               }));
 
@@ -100,13 +103,23 @@ export const UpdateInfo = () => {
                 {errors.root && <p className="text-red-500 text-center">{errors.root.message}</p>}
 
                 <div className='my-4 flex justify-center items-center w-full'>
-                <button 
+                  {
+                    isLoading?(<button 
+                      type="submit" 
+                      className="py-2 w-[70%] text-white font-semibold rounded-lg  bg-green-400 disabled:opacity-50 cursor-wait"
+                      disabled={true}
+                    >
+                      {isLoading ? "Updating..." : "Update Info"}
+                    </button>):(<button 
               type="submit" 
-              className="py-2 w-[70%] text-white font-semibold rounded-lg cursor-pointer bg-green-400 disabled:opacity-50"
+              className="py-2 w-[70%] text-white font-semibold rounded-lg cursor-pointer bg-green-400 disabled:opacity-50 "
               disabled={isSubmitting || isLoading}
             >
               {isLoading ? "Updating..." : "Update Info"}
-            </button>
+            </button>)
+
+                  }
+                
                 </div>
             </form>
         </div>
