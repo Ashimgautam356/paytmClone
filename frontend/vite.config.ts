@@ -12,6 +12,6 @@ export default defineConfig({
   preview: {
     host: "0.0.0.0",
     port: 10000,
-    allowedHosts: ["paytmclone-frontend.onrender.com"],
+    allowedHosts: ["paytmclone-1.onrender.com"],
   },
 })
