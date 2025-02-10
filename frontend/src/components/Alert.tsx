@@ -1,8 +1,4 @@
 
-type cutomTypes = {
-    success?:string,
-    normal?:string
-}
 
 interface Proptypes {
   message: string,
