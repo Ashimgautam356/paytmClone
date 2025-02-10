@@ -8,8 +8,12 @@ import z from 'zod'
 
 const UserInput = z.object({
     remarks: z.string().optional(),
-    amount: z.string().min(1).max(10000),
-    pin: z.string().min(1).max(999999)
+    amount: z.number()
+        .or(z.string().regex(/\d+/).transform(Number))
+        .refine((n) => n > 0) ,
+    pin: z.number()
+    .or(z.string().regex(/\d+/).transform(Number))
+    .refine((n) => (n > 0 && n<=999999))
 })
 
 
@@ -43,7 +47,7 @@ export const SendMoney = () => {
         await refetch()
         if (response?.message == 'Transfer successful') {
             navigate("/");
-            <Alert message='success' />
+            <Alert types='success' message='success' />
         }
     }catch(err:any){
         console.log(err)
@@ -88,7 +92,7 @@ return <div className="flex justify-center h-screen bg-gray-100">
                                     id="amount"
                                     placeholder="Enter amount"
                                 />
-                                {errors.amount && <p className='text-red-500 text-xs mb-4 ' >{errors.amount?.message}</p>}
+                                {errors?.amount && <p className='text-red-500 text-xs mb-4 ' >{errors.amount?.message}</p>}
 
                             </div>
                             <div className="flex flex-col items-start  text-sm  py-1">

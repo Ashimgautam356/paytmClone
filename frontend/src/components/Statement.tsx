@@ -11,20 +11,20 @@ export const Statement = () => {
                     {
                         info?.method == "Debit"?(<>
                             <p className="text-gray-400 px-4">{id+1}.</p>
-                            <p className="px-4">{info?.userId}</p>
                             <p className="text-red-400 px-4">{info.method}ed</p>
                             <p className="px-4">to:- {info?.to}</p>
                             <p className="px-4">ammout:- <span className="text-red-400">{info?.balance}</span></p>
+                            <p className="text-gray-400 px-4">Remarks: <span className="text-black italic">{info?.remarks}</span></p>
                             <p className="text-gray-400 px-4"> {new Date(info?.createdAt).toLocaleString()}</p>
                         </>
 
                         ):(
                             <>
                             <p className="text-gray-400 px-4">{id+1}.</p>
-                            <p className="px-4">{info?.userId}</p>
                             <p className="text-green-400 px-4">{info.method}ed</p>
                             <p className="px-4">by:- {info?.to}</p>
                             <p className="px-4">ammout:- <span className="text-green-400">{info?.balance}</span></p>
+                            <p className="text-gray-400 px-4">Remarks: <span className="text-black italic">{info?.remarks}</span></p>
                             <p className="text-gray-400 px-4"> {new Date(info?.createdAt).toLocaleString()}</p>
                             </>
                         )
