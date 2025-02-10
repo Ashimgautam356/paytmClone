@@ -2,7 +2,7 @@ Welcome to the Paytm Clone project! This project is created primarily to practic
 
 # 🚀 Live Demo
 You can view the live project at:
-https://paytmclone-frontend.onrender.com/
+https://paytmclone-1.onrender.com
 
 
 
