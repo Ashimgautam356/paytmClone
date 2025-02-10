@@ -1,5 +1,5 @@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useSendMoneyMutation } from '../store/api/service';
+import { useSendMoneyMutation, useUserBalanceQuery } from '../store/api/service';
 import { Alert } from '../components/Alert';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,20 +16,22 @@ const UserInput = z.object({
 type formField = z.infer<typeof UserInput>
 
 export const SendMoney = () => {
-const [searchParams] = useSearchParams();
-const id = searchParams.get("id");
-const name = searchParams.get("name");
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
+    const name = searchParams.get("name");
 
 
 
-const [userData,{isLoading}] = useSendMoneyMutation()
-const navigate = useNavigate()
+    const [userData,{isLoading}] = useSendMoneyMutation()
+    const navigate = useNavigate()
 
-const { register, handleSubmit, formState: { errors, isSubmitting}, setError } = useForm<formField>({
-    resolver: zodResolver(UserInput)
-})
+    const {refetch} = useUserBalanceQuery()
 
-const onSubmit: SubmitHandler<formField> = async (data: any) => {
+    const { register, handleSubmit, formState: { errors, isSubmitting}, setError } = useForm<formField>({
+        resolver: zodResolver(UserInput)
+    })
+
+    const onSubmit: SubmitHandler<formField> = async (data: any) => {
 
     try{
         const response = await userData({
@@ -38,8 +40,7 @@ const onSubmit: SubmitHandler<formField> = async (data: any) => {
             remarks: data.remarks,
             transactionPin: Number(data.pin)
         }).unwrap()
-
-        console.log(response)
+        await refetch()
         if (response?.message == 'Transfer successful') {
             navigate("/");
             <Alert message='success' />

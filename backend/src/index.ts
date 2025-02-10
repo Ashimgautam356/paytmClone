@@ -9,7 +9,7 @@ const app = express()
 // conneting to the backend
 mongoose.connect(`${process.env.MONGO_CONNECTION}`)
 
-const myfrontend = process.env.MAIN_FRONTEND_URL
+const myfrontend = [`${process.env.MAIN_FRONTEND_URL}`,`${process.env.LOCAL_FRONTEND_URL}`]
 app.use(cors({
     optionsSuccessStatus:200,
     origin: myfrontend,
